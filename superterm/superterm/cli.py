@@ -134,6 +134,51 @@ def preview(path: str) -> None:
     render_preview(full_path, console=Console())
 
 
+# --- Direct file-tool commands: no AI backend/API key needed, useful for testing
+# the file/tag/organize layer on its own, or scripting it without a model in the loop.
+
+
+@app.command()
+def ls(path: str = typer.Argument(".")) -> None:
+    """List a directory (type, size, tags) without going through the AI."""
+    cfg = cfgmod.load_config()
+    registry, _ = _build_registry(cfg)
+    typer.echo(registry.call("list_dir", {"path": path}))
+
+
+@app.command()
+def find(
+    text: str = typer.Option("", "--query", "-q", help="filename substring"),
+    file_type: str = typer.Option("", "--type", "-t", help="classified type, e.g. python/php/data/image"),
+    tag: str = typer.Option("", "--tag", help="only files with this tag"),
+) -> None:
+    """Search files by name, classified type, and/or tag."""
+    cfg = cfgmod.load_config()
+    registry, _ = _build_registry(cfg)
+    typer.echo(registry.call("search_files", {"query": text, "file_type": file_type, "tag": tag}))
+
+
+@app.command()
+def tag(path: str, tags: str) -> None:
+    """Attach comma-separated tags to a file (sidecar DB, file itself is untouched)."""
+    cfg = cfgmod.load_config()
+    registry, _ = _build_registry(cfg)
+    typer.echo(registry.call("tag_file", {"path": path, "tags": tags}))
+
+
+@app.command()
+def organize(
+    path: str = typer.Argument("."),
+    strategy: str = typer.Option("type", help="type | tag | date"),
+    apply: bool = typer.Option(False, "--apply", help="actually move files (default: dry-run plan only)"),
+) -> None:
+    """Preview (default) or apply reorganizing a folder into subfolders by type/tag/date."""
+    cfg = cfgmod.load_config()
+    registry, _ = _build_registry(cfg)
+    tool_name = "organize_apply" if apply else "organize_plan"
+    typer.echo(registry.call(tool_name, {"path": path, "strategy": strategy}))
+
+
 def main() -> None:
     app()
 

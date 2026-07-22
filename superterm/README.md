@@ -81,6 +81,21 @@ superterm query "SELECT * FROM hr__employees LIMIT 10"
 Inside `superterm start`, anything typed is tried as a real shell command
 first; if it's not one, it's sent to the AI as a natural-language request.
 
+### Testing the file/data layer without an AI backend
+
+`ls`, `find`, `tag`, and `organize` hit the same tools the AI uses, but run
+directly with no API key or model needed — handy for trying the file layer out
+before wiring up a backend:
+
+```bash
+superterm ls .
+superterm find --type php
+superterm tag report.pdf "finance,2025"
+superterm find --tag finance
+superterm organize legacy --strategy type            # dry-run plan
+superterm organize legacy --strategy type --apply     # actually move files
+```
+
 ## Data sources
 
 Copy `config/connectors.example.yaml` to `~/.superterm/connectors.yaml` and
