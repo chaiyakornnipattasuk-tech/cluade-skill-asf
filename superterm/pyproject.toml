@@ -1,0 +1,30 @@
+[project]
+name = "superterm"
+version = "0.1.0"
+description = "AI-augmented terminal: file navigation/tagging/organizing, legacy code preview, and a local federated data warehouse over CSV/SQLite/REST/Postgres sources."
+requires-python = ">=3.10"
+dependencies = [
+    "typer>=0.12",
+    "rich>=13.7",
+    "prompt_toolkit>=3.0",
+    "pyyaml>=6.0",
+    "requests>=2.31",
+    "pandas>=2.0",
+    "duckdb>=1.0",
+]
+
+[project.optional-dependencies]
+anthropic = ["anthropic>=0.34"]
+openai = ["openai>=1.40"]
+postgres = ["psycopg2-binary>=2.9"]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+superterm = "superterm.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["superterm*"]
