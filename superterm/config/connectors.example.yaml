@@ -1,0 +1,38 @@
+# Copy this file to ~/.superterm/connectors.yaml (or point --connectors at your own
+# copy) and describe each data source you want unified. Every source becomes a set
+# of DuckDB tables named "<source_name>__<table_name>", so a single SQL query can
+# join across departments/systems that were never built to talk to each other.
+#
+# This does not grant access to any government or department system by itself —
+# it only loads whatever export, database, or API you already have credentials
+# and permission for. Point it at CSV drops, read-only DB replicas, or REST APIs
+# each department is willing to give you.
+
+sources:
+  # A folder of monthly CSV exports from one department, concatenated into one table.
+  permits_dept:
+    type: csv
+    path: "./data/permits/*.csv"
+    table: permits
+
+  # A read-only SQLite export from another department.
+  finance_dept:
+    type: sqlite
+    path: "./data/finance/budgets.sqlite"
+    tables: [budgets, transactions]
+
+  # A REST API another department exposes (e.g. an open-data portal).
+  housing_dept:
+    type: rest
+    url: "https://example.gov/api/housing/records"
+    method: GET
+    headers:
+      Authorization: "Bearer ${HOUSING_API_TOKEN}"
+    json_path: "results"
+    table: records
+
+  # A Postgres database you've been given read access to (needs: pip install psycopg2-binary).
+  # health_dept:
+  #   type: postgres
+  #   dsn: "postgresql://readonly_user:${HEALTH_DB_PASSWORD}@db.example.gov/health"
+  #   tables: [clinics, inspections]
